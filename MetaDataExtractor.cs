@@ -1,9 +1,8 @@
-﻿using System;
+﻿using CodeFluent.Runtime.BinaryServices;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using CodeFluent.Runtime.BinaryServices;
+using System.Text;
 using Trinet.Core.IO.Ntfs;
 
 namespace WindowsFormsADSTest
@@ -18,6 +17,7 @@ namespace WindowsFormsADSTest
         public string Comments { get; set; }
         //
         public string Name { get; set; }
+        public string Extension { get; set; }
         public string Folder { get; set; }
         public string Path { get; set; }        
         public string Created { get; set; }
@@ -25,6 +25,28 @@ namespace WindowsFormsADSTest
         public string Size { get; set; }
         //
         public string Keywords { get; set; }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine(string.Format("Title:\t {0}", Title));
+            sb.AppendLine(string.Format("Subject:\t {0}", Subject));
+            sb.AppendLine(string.Format("Author:\t {0}", Author));
+            sb.AppendLine(string.Format("Category:\t {0}", Category));
+            sb.AppendLine(string.Format("Comments:\t {0}", Comments));
+            sb.AppendLine(string.Format("Name:\t {0}", Name));
+            sb.AppendLine(string.Format("Extension:\t {0}", Extension));
+            sb.AppendLine(string.Format("Folder:\t {0}", Folder));
+            sb.AppendLine(string.Format("Path:\t {0}", Path));
+            sb.AppendLine(string.Format("Created:\t {0}", Created));
+            sb.AppendLine(string.Format("Modified:\t {0}", Modified));
+            sb.AppendLine(string.Format("Size:\t {0}", Size));
+            sb.AppendLine(string.Format("Keywords:\t {0}", Keywords));
+            
+
+            return sb.ToString();
+        }
     }
 
      public static class DictionaryExtensions 
@@ -52,10 +74,11 @@ namespace WindowsFormsADSTest
         const string Category = "Category";
         const string Comments = "Comments";
         const string Name = "Name";
+        const string Extension = "Extension";
         const string Folder = "Folder";
         const string Path = "Path";
-        const string Created = "Created";
-        const string Modified = "Modified";
+        const string Created = "Date Created";
+        const string Modified = "Date Modified";
         const string Size = "Size";
         const string Keywords = "Keywords";
 
@@ -78,6 +101,7 @@ namespace WindowsFormsADSTest
                 Comments = properties.GetValueOrDefault(Comments, GetErrorMessage(Comments)),
                 //
                 Name = properties.GetValueOrDefault(Name, GetErrorMessage(Name)),
+                Extension = properties.GetValueOrDefault(Extension, GetErrorMessage(Extension)),
                 Folder = properties.GetValueOrDefault(Folder, GetErrorMessage(Folder)),
                 Path = properties.GetValueOrDefault(Path, GetErrorMessage(Path)),
                 Created = properties.GetValueOrDefault(Created, GetErrorMessage(Created)),
@@ -200,10 +224,13 @@ namespace WindowsFormsADSTest
                 {
                     var ads = file.FullName + stream.Name;
                     var bytes = NtfsAlternateStream.ReadAllBytes(ads);
-                    var ttt = System.Text.Encoding.ASCII.GetString(bytes);
-                    var text = NtfsAlternateStream.ReadAllText(ads);
+                                        
                     var testFile = file.FullName + ".streamdata";
                     File.WriteAllBytes(testFile,bytes);
+                    
+                    var asciiData = System.Text.Encoding.ASCII.GetString(bytes);
+                    var testTextFile = file.FullName + ".streamdata" + ".txt";
+                    System.IO.File.WriteAllText(testTextFile,asciiData);
                 }
             }
 
@@ -214,6 +241,7 @@ namespace WindowsFormsADSTest
         {
             var filePath = file.FullName;
             var directory = file.DirectoryName;
+            var extension = file.Extension;
             var shell = new Shell32.Shell();
             var folder = shell.NameSpace(directory);
             var fileName = file.Name;
@@ -227,6 +255,10 @@ namespace WindowsFormsADSTest
                 var value = folder.GetDetailsOf(folderitem, i);
                 if (!dictionary.ContainsKey(header)) dictionary.Add(header, value);                
             }
+            if (!dictionary.ContainsKey("Folder")) dictionary.Add("Folder", directory);
+            if (!dictionary.ContainsKey("Path")) dictionary.Add("Path", filePath);
+            if (!dictionary.ContainsKey("Extension")) dictionary.Add("Extension", extension);
+
             return dictionary;
         }
     }

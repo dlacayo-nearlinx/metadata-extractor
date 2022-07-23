@@ -31,71 +31,133 @@
             this.folderDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.txtPath = new System.Windows.Forms.TextBox();
             this.btnChooseDir = new System.Windows.Forms.Button();
-            this.lblDirectory = new System.Windows.Forms.Label();
             this.btnProcessFiles = new System.Windows.Forms.Button();
             this.txtInfo = new System.Windows.Forms.RichTextBox();
+            this.chkRecursive = new System.Windows.Forms.CheckBox();
+            this.btnOutputFile = new System.Windows.Forms.Button();
+            this.txtOutputFile = new System.Windows.Forms.TextBox();
+            this.fileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // txtPath
             // 
-            this.txtPath.Location = new System.Drawing.Point(15, 25);
+            this.txtPath.Location = new System.Drawing.Point(6, 19);
             this.txtPath.Name = "txtPath";
             this.txtPath.ReadOnly = true;
-            this.txtPath.Size = new System.Drawing.Size(483, 20);
+            this.txtPath.Size = new System.Drawing.Size(489, 20);
             this.txtPath.TabIndex = 0;
             // 
             // btnChooseDir
             // 
-            this.btnChooseDir.Location = new System.Drawing.Point(504, 25);
+            this.btnChooseDir.Location = new System.Drawing.Point(6, 45);
             this.btnChooseDir.Name = "btnChooseDir";
-            this.btnChooseDir.Size = new System.Drawing.Size(146, 23);
-            this.btnChooseDir.TabIndex = 1;
+            this.btnChooseDir.Size = new System.Drawing.Size(193, 23);
+            this.btnChooseDir.TabIndex = 0;
             this.btnChooseDir.Text = "Choose Directory";
             this.btnChooseDir.UseVisualStyleBackColor = true;
             this.btnChooseDir.Click += new System.EventHandler(this.btnChooseDir_Click);
             // 
-            // lblDirectory
-            // 
-            this.lblDirectory.AutoSize = true;
-            this.lblDirectory.Location = new System.Drawing.Point(12, 9);
-            this.lblDirectory.Name = "lblDirectory";
-            this.lblDirectory.Size = new System.Drawing.Size(49, 13);
-            this.lblDirectory.TabIndex = 3;
-            this.lblDirectory.Text = "Directory";
-            // 
             // btnProcessFiles
             // 
-            this.btnProcessFiles.Location = new System.Drawing.Point(15, 52);
+            this.btnProcessFiles.Location = new System.Drawing.Point(12, 205);
             this.btnProcessFiles.Name = "btnProcessFiles";
-            this.btnProcessFiles.Size = new System.Drawing.Size(190, 23);
-            this.btnProcessFiles.TabIndex = 4;
+            this.btnProcessFiles.Size = new System.Drawing.Size(507, 30);
+            this.btnProcessFiles.TabIndex = 2;
             this.btnProcessFiles.Text = "Process Files";
             this.btnProcessFiles.UseVisualStyleBackColor = true;
             this.btnProcessFiles.Click += new System.EventHandler(this.btnProcessFiles_Click);
             // 
             // txtInfo
             // 
-            this.txtInfo.Location = new System.Drawing.Point(15, 81);
+            this.txtInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtInfo.Location = new System.Drawing.Point(15, 241);
             this.txtInfo.Name = "txtInfo";
-            this.txtInfo.Size = new System.Drawing.Size(773, 357);
-            this.txtInfo.TabIndex = 5;
+            this.txtInfo.Size = new System.Drawing.Size(815, 313);
+            this.txtInfo.TabIndex = 3;
             this.txtInfo.Text = "";
+            // 
+            // chkRecursive
+            // 
+            this.chkRecursive.AutoSize = true;
+            this.chkRecursive.Location = new System.Drawing.Point(9, 74);
+            this.chkRecursive.Name = "chkRecursive";
+            this.chkRecursive.Size = new System.Drawing.Size(135, 17);
+            this.chkRecursive.TabIndex = 1;
+            this.chkRecursive.Text = "Process sub directories";
+            this.chkRecursive.UseVisualStyleBackColor = true;
+            // 
+            // btnOutputFile
+            // 
+            this.btnOutputFile.Location = new System.Drawing.Point(6, 45);
+            this.btnOutputFile.Name = "btnOutputFile";
+            this.btnOutputFile.Size = new System.Drawing.Size(193, 23);
+            this.btnOutputFile.TabIndex = 0;
+            this.btnOutputFile.Text = "Choose Output File";
+            this.btnOutputFile.UseVisualStyleBackColor = true;
+            this.btnOutputFile.Click += new System.EventHandler(this.btnOutputFile_Click);
+            // 
+            // txtOutputFile
+            // 
+            this.txtOutputFile.Location = new System.Drawing.Point(6, 19);
+            this.txtOutputFile.Name = "txtOutputFile";
+            this.txtOutputFile.ReadOnly = true;
+            this.txtOutputFile.Size = new System.Drawing.Size(483, 20);
+            this.txtOutputFile.TabIndex = 4;
+            // 
+            // fileDialog
+            // 
+            this.fileDialog.DefaultExt = "xlsx";
+            this.fileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+            this.fileDialog.InitialDirectory = "@\"C:\\\"";
+            this.fileDialog.RestoreDirectory = true;
+            this.fileDialog.Title = "Choose the output file";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.txtPath);
+            this.groupBox1.Controls.Add(this.btnChooseDir);
+            this.groupBox1.Controls.Add(this.chkRecursive);
+            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(510, 103);
+            this.groupBox1.TabIndex = 0;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Source Directory";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.txtOutputFile);
+            this.groupBox2.Controls.Add(this.btnOutputFile);
+            this.groupBox2.Location = new System.Drawing.Point(12, 121);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(507, 78);
+            this.groupBox2.TabIndex = 1;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Output File";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(842, 566);
+            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.txtInfo);
             this.Controls.Add(this.btnProcessFiles);
-            this.Controls.Add(this.lblDirectory);
-            this.Controls.Add(this.btnChooseDir);
-            this.Controls.Add(this.txtPath);
             this.Name = "MainForm";
             this.ShowIcon = false;
-            this.Text = "Metadata Reader";
+            this.Text = "Metadata Extractor";
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -104,9 +166,14 @@
         private System.Windows.Forms.FolderBrowserDialog folderDialog;
         private System.Windows.Forms.TextBox txtPath;
         private System.Windows.Forms.Button btnChooseDir;
-        private System.Windows.Forms.Label lblDirectory;
         private System.Windows.Forms.Button btnProcessFiles;
         private System.Windows.Forms.RichTextBox txtInfo;
+        private System.Windows.Forms.CheckBox chkRecursive;
+        private System.Windows.Forms.Button btnOutputFile;
+        private System.Windows.Forms.TextBox txtOutputFile;
+        private System.Windows.Forms.SaveFileDialog fileDialog;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }
 
