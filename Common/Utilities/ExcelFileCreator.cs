@@ -1,7 +1,8 @@
-﻿using SpreadsheetLight;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using MetadataExtractor.Common.Models;
+using SpreadsheetLight;
 
-namespace WindowsFormsADSTest
+namespace MetadataExtractor.Common.Utilities
 {
     public static class ExcelFileCreator
     {

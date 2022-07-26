@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsADSTest
+﻿namespace MetadataExtractor
 {
     partial class MainForm
     {
@@ -32,13 +32,14 @@
             this.txtPath = new System.Windows.Forms.TextBox();
             this.btnChooseDir = new System.Windows.Forms.Button();
             this.btnProcessFiles = new System.Windows.Forms.Button();
-            this.txtInfo = new System.Windows.Forms.RichTextBox();
             this.chkRecursive = new System.Windows.Forms.CheckBox();
             this.btnOutputFile = new System.Windows.Forms.Button();
             this.txtOutputFile = new System.Windows.Forms.TextBox();
             this.fileDialog = new System.Windows.Forms.SaveFileDialog();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.lblProgress = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -70,17 +71,6 @@
             this.btnProcessFiles.Text = "Process Files";
             this.btnProcessFiles.UseVisualStyleBackColor = true;
             this.btnProcessFiles.Click += new System.EventHandler(this.btnProcessFiles_Click);
-            // 
-            // txtInfo
-            // 
-            this.txtInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtInfo.Location = new System.Drawing.Point(15, 241);
-            this.txtInfo.Name = "txtInfo";
-            this.txtInfo.Size = new System.Drawing.Size(815, 313);
-            this.txtInfo.TabIndex = 3;
-            this.txtInfo.Text = "";
             // 
             // chkRecursive
             // 
@@ -141,14 +131,31 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Output File";
             // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(12, 263);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(504, 23);
+            this.progressBar.TabIndex = 4;
+            // 
+            // lblProgress
+            // 
+            this.lblProgress.AutoSize = true;
+            this.lblProgress.Location = new System.Drawing.Point(12, 247);
+            this.lblProgress.Name = "lblProgress";
+            this.lblProgress.Size = new System.Drawing.Size(107, 13);
+            this.lblProgress.TabIndex = 5;
+            this.lblProgress.Text = "Processed x of n files";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(842, 566);
+            this.ClientSize = new System.Drawing.Size(539, 321);
+            this.Controls.Add(this.lblProgress);
+            this.Controls.Add(this.progressBar);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.txtInfo);
             this.Controls.Add(this.btnProcessFiles);
             this.Name = "MainForm";
             this.ShowIcon = false;
@@ -158,6 +165,7 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -167,13 +175,14 @@
         private System.Windows.Forms.TextBox txtPath;
         private System.Windows.Forms.Button btnChooseDir;
         private System.Windows.Forms.Button btnProcessFiles;
-        private System.Windows.Forms.RichTextBox txtInfo;
         private System.Windows.Forms.CheckBox chkRecursive;
         private System.Windows.Forms.Button btnOutputFile;
         private System.Windows.Forms.TextBox txtOutputFile;
         private System.Windows.Forms.SaveFileDialog fileDialog;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.ProgressBar progressBar;
+        private System.Windows.Forms.Label lblProgress;
     }
 }
 

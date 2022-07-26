@@ -1,66 +1,13 @@
-﻿using CodeFluent.Runtime.BinaryServices;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Trinet.Core.IO.Ntfs;
+using CodeFluent.Runtime.BinaryServices;
+using MetadataExtractor.Common.Models;
+using MetadataExtractor.Common.Extensions;
 
-namespace WindowsFormsADSTest
+namespace MetadataExtractor.Common.Utilities
 {
-
-    public class FileMetadata 
-    {
-        public string Title { get; set; }
-        public string Subject { get; set; }
-        public string Author { get; set; }
-        public string Category { get; set; }        
-        public string Comments { get; set; }
-        //
-        public string Name { get; set; }
-        public string Extension { get; set; }
-        public string Folder { get; set; }
-        public string Path { get; set; }        
-        public string Created { get; set; }
-        public string Modified { get; set; }
-        public string Size { get; set; }
-        //
-        public string Keywords { get; set; }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-
-            sb.AppendLine(string.Format("Title:\t {0}", Title));
-            sb.AppendLine(string.Format("Subject:\t {0}", Subject));
-            sb.AppendLine(string.Format("Author:\t {0}", Author));
-            sb.AppendLine(string.Format("Category:\t {0}", Category));
-            sb.AppendLine(string.Format("Comments:\t {0}", Comments));
-            sb.AppendLine(string.Format("Name:\t {0}", Name));
-            sb.AppendLine(string.Format("Extension:\t {0}", Extension));
-            sb.AppendLine(string.Format("Folder:\t {0}", Folder));
-            sb.AppendLine(string.Format("Path:\t {0}", Path));
-            sb.AppendLine(string.Format("Created:\t {0}", Created));
-            sb.AppendLine(string.Format("Modified:\t {0}", Modified));
-            sb.AppendLine(string.Format("Size:\t {0}", Size));
-            sb.AppendLine(string.Format("Keywords:\t {0}", Keywords));
-            
-
-            return sb.ToString();
-        }
-    }
-
-     public static class DictionaryExtensions 
-    {
-         public static TValue GetValueOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue defaultValue = default(TValue))
-         {
-             if (dictionary == null) return defaultValue;
-             if (key == null) return defaultValue;
-
-             TValue value;
-             return dictionary.TryGetValue(key, out value) ? value : defaultValue;
-         }  
-    }
-
     /*
      Alternate data streams.
      * IDT File Format with ascii data
@@ -113,11 +60,7 @@ namespace WindowsFormsADSTest
             return metadata;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
+        // not used
         private static string GetExtendedPropertiesFromFile(FileInfo file)
         {
             const string ExtendedPropertyGuid = "{F29F85E0-4FF9-1068-AB91-08002B27B3D9}";
@@ -127,7 +70,6 @@ namespace WindowsFormsADSTest
             Shell32.Folder directory = shell.NameSpace(file.DirectoryName);
             Shell32.FolderItem folderItem = directory.Items().Item(file.Name);
             Shell32.ShellFolderItem shellFolderItem = (Shell32.ShellFolderItem)folderItem;
-
 
             string name0 = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 0");
             string name1 = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 1");
@@ -146,98 +88,58 @@ namespace WindowsFormsADSTest
 
 
             return sb.ToString();
-        }
+        }      
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        private static string GetKeywordsUsingCoreIO(FileInfo file)
-        {
-            //FileInfo file = new FileInfo(path.FullName);
-            var sb = new StringBuilder();
-
-            sb.AppendLine(string.Format("Processing file: {0}", file.Name));
-            // List the additional streams for a file:
-            sb.AppendLine("Processing Alternate Data Streams for file");
-            foreach (AlternateDataStreamInfo stream in file.ListAlternateDataStreams())
-            {
-                //stream.
-                //Console.WriteLine("{0} - {1} bytes", s.Name, s.Size);
-                sb.AppendLine(string.Format("{0} - {1} bytes", stream.Name, stream.Size));
-                var atts = stream.Attributes;
-                var fileStream = stream.OpenRead();
-                var canRead = fileStream.CanRead;
-                var streamReader = new StreamReader(fileStream, true);
-                var adStream = streamReader.ReadToEnd();
-                sb.AppendLine("Stream Contents:\n\n");
-                //sb.AppendLine(adStream);
-                var contentsReader = stream.OpenText();
-                var encoding = contentsReader.CurrentEncoding;
-                var contents = contentsReader.ReadToEnd();
-            }
-
-            // Read the "Zone.Identifier" stream, if it exists:
-            if (file.AlternateDataStreamExists("Zone.Identifier"))
-            {
-                //Console.WriteLine("Found zone identifier stream:");
-                sb.AppendLine("Found zone identifier stream:");
-
-                AlternateDataStreamInfo s = file.GetAlternateDataStream("Zone.Identifier", FileMode.Open);
-                using (TextReader reader = s.OpenText())
-                {
-                    var ss = reader.ReadToEnd();
-                    Console.WriteLine(ss);
-                    sb.AppendLine(ss);
-                }
-                // Delete the stream:
-                s.Delete();
-            }
-            else
-            {
-                //Console.WriteLine("No zone identifier stream found.");
-                sb.AppendLine("No zone identifier stream found.");
-            }
-
-            // Alternative method to delete the stream:
-            file.DeleteAlternateDataStream("Zone.Identifier");
-            var text = sb.ToString();
-            return text;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
-        public static string GetKeywordsUsingCodeFluent(FileInfo file)
+        private static string GetKeywordsUsingCodeFluent(FileInfo file)
         {
             var streams = NtfsAlternateStream.EnumerateStreams(file);
+            var sb = new StringBuilder();
             foreach (var stream in streams)
             {
                 var name = stream.Name;
                 var size = stream.Size;
                 var type = stream.StreamType;
-
+                
                 if (type == NtfsAlternateStreamType.AlternateData && stream.Name.Contains("SummaryInformation") && !stream.Name.Contains("Document"))
                 {
                     var ads = file.FullName + stream.Name;
                     var bytes = NtfsAlternateStream.ReadAllBytes(ads);
-                                        
+                      
+                    /*
+                    // save stram data to raw file
                     var testFile = file.FullName + ".streamdata";
-                    File.WriteAllBytes(testFile,bytes);
-                    
-                    var asciiData = System.Text.Encoding.ASCII.GetString(bytes);
-                    var testTextFile = file.FullName + ".streamdata" + ".txt";
-                    System.IO.File.WriteAllText(testTextFile,asciiData);
+                    File.WriteAllBytes(testFile,bytes);                    
+                    */
+
+                    // get the number of props
+                    var propCount = Convert.ToInt32(bytes[52]);
+                    for (int i = 0; i < propCount; i++) 
+                    { 
+                        var index = 56 + (8*i);
+                        var propId = Convert.ToInt32(bytes[index]);
+                        if (propId != 5)
+                            continue;
+
+                        // we have the prop, advance 4 bytes and get the offset                        
+                        var offset = bytes[index+5] << 8 | bytes[index + 4];
+
+                        var dataLocation = 0x2C + offset + 0xC;
+                        var b = bytes[dataLocation];
+                        while ( b != 0 && b != 30) 
+                        {
+                            sb.Append((char)b);
+                            dataLocation++;
+                            b = bytes[dataLocation];
+                        }                        
+                        break;
+                    }                                     
                 }
             }
-
-            return "";
+            var kw = sb.ToString();
+            return kw;
         }
 
-        public static Dictionary<string, string> GetExtendedPropertiesFromFolderData(FileInfo file)
+        private static Dictionary<string, string> GetExtendedPropertiesFromFolderData(FileInfo file)
         {
             var filePath = file.FullName;
             var directory = file.DirectoryName;
