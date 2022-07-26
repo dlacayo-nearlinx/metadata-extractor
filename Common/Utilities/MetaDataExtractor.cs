@@ -37,7 +37,7 @@ namespace MetadataExtractor.Common.Utilities
         public static FileMetadata GetFileMetadata(FileInfo file)
         {
             var properties = GetExtendedPropertiesFromFolderData(file);
-            var keywords = GetKeywordsUsingCodeFluent(file);
+            var keywords = ""; //GetKeywordsUsingCodeFluent(file); // todo: re-enable this for production
             
             var metadata = new FileMetadata() 
             {
