@@ -62,8 +62,6 @@ namespace MetadataExtractor
                 progressBar.Maximum = fileCount;
                 progressBar.Value = 0;
 
-                //txtInfo.Text = "";
-                //txtInfo.Text += string.Format("Processing {0} files across {1} directories.\n\n", fileCount, directoryCount);
                 _logger.Info(string.Format("Processing {0} files across {1} directories.\n\n", fileCount, directoryCount));
 
                 var fileProgressCounter = 1;

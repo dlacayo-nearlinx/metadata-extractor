@@ -1,17 +1,21 @@
-﻿using System.Collections.Generic;
-using MetadataExtractor.Common.Models;
+﻿using MetadataExtractor.Common.Models;
 using SpreadsheetLight;
+using System.Collections.Generic;
 
 namespace MetadataExtractor.Common.Utilities
 {
     public static class ExcelFileCreator
     {
+        /// <summary>
+        /// Exports the files information and metadata to an excel file.
+        /// </summary>
+        /// <param name="files"></param>
+        /// <param name="filePath"></param>
         public static void ExportDataToExcel(List<FileMetadata> files, string filePath)
         {
             // generate excel file
             var sl = new SLDocument();
             var currentRow = 1;
-            //var currentColumn = 1;
 
             sl.SetCellValue(currentRow, 1, "Name");
             sl.SetCellValue(currentRow, 2, "Name");

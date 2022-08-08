@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.IO;
 using System.Text;
 using CodeFluent.Runtime.BinaryServices;
@@ -8,10 +9,6 @@ using MetadataExtractor.Common.Extensions;
 
 namespace MetadataExtractor.Common.Utilities
 {
-    /*
-     Alternate data streams.
-     * IDT File Format with ascii data
-     */   
 
     public static class MetaDataExtractor
     {       
@@ -29,15 +26,16 @@ namespace MetadataExtractor.Common.Utilities
         const string Size = "Size";
         const string Keywords = "Keywords";
 
-        private static string GetErrorMessage(string property) 
-        {
-            return string.Format("The {0} information could not be read", property);
-        }
-
+       
+        /// <summary>
+        /// Reads the file info and metadata for the specified file
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>FileMetadata object with values</returns>
         public static FileMetadata GetFileMetadata(FileInfo file)
         {
             var properties = GetExtendedPropertiesFromFolderData(file);
-            var keywords = ""; //GetKeywordsUsingCodeFluent(file); // todo: re-enable this for production
+            var keywords = GetKeywordsUsingCodeFluent(file);
             
             var metadata = new FileMetadata() 
             {
@@ -59,70 +57,42 @@ namespace MetadataExtractor.Common.Utilities
             };
             return metadata;
         }
-
-        // not used
-        private static string GetExtendedPropertiesFromFile(FileInfo file)
+        private static string GetErrorMessage(string property)
         {
-            const string ExtendedPropertyGuid = "{F29F85E0-4FF9-1068-AB91-08002B27B3D9}";
-            var sb = new StringBuilder();            
-            
-            Shell32.Shell shell = new Shell32.Shell();
-            Shell32.Folder directory = shell.NameSpace(file.DirectoryName);
-            Shell32.FolderItem folderItem = directory.Items().Item(file.Name);
-            Shell32.ShellFolderItem shellFolderItem = (Shell32.ShellFolderItem)folderItem;
-
-            string name0 = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 0");
-            string name1 = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 1");
-            string title = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 2");
-            string subject = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 3");
-            string author = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 4");
-            string keywords = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 5");
-            string comments = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 6");
-            string name7 = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 7");
-            string name8 = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 8");
-            string name9 = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 9");
-            string name10 = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 10");
-            string name11 = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 11");
-            string name12 = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 12");
-            string name13 = (string)shellFolderItem.ExtendedProperty(ExtendedPropertyGuid + " 13");
-
-
-            return sb.ToString();
-        }      
+            return string.Format("The {0} information could not be read", property);
+        }
 
         private static string GetKeywordsUsingCodeFluent(FileInfo file)
         {
+            const int PropertyCountOffset = 52; 
+            const int PropertyStart = 56;
+            const int KeywordPropertyId = 5;
+            
+
             var streams = NtfsAlternateStream.EnumerateStreams(file);
             var sb = new StringBuilder();
             foreach (var stream in streams)
             {
-                var name = stream.Name;
-                var size = stream.Size;
                 var type = stream.StreamType;
                 
                 if (type == NtfsAlternateStreamType.AlternateData && stream.Name.Contains("SummaryInformation") && !stream.Name.Contains("Document"))
                 {
                     var ads = file.FullName + stream.Name;
                     var bytes = NtfsAlternateStream.ReadAllBytes(ads);
-                      
-                    /*
-                    // save stram data to raw file
-                    var testFile = file.FullName + ".streamdata";
-                    File.WriteAllBytes(testFile,bytes);                    
-                    */
 
                     // get the number of props
-                    var propCount = Convert.ToInt32(bytes[52]);
+                    var propCount = Convert.ToInt32(bytes[PropertyCountOffset]);
                     for (int i = 0; i < propCount; i++) 
                     { 
-                        var index = 56 + (8*i);
+                        var index = PropertyStart + (8*i);
                         var propId = Convert.ToInt32(bytes[index]);
-                        if (propId != 5)
+                        if (propId != KeywordPropertyId )
                             continue;
 
-                        // we have the prop, advance 4 bytes and get the offset                        
+                        // we have the prop, advance 4 bytes and get the offset, need to shift bits because of Big Endian                       
                         var offset = bytes[index+5] << 8 | bytes[index + 4];
 
+                        // header data offset + value offset + padding bytes
                         var dataLocation = 0x2C + offset + 0xC;
                         var b = bytes[dataLocation];
                         while ( b != 0 && b != 30) 
